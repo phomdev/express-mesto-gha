@@ -16,15 +16,12 @@ mongoose.connect('mongodb://127.0.0.1:27017/mestodb');
 app.use(express.json());
 app.use(helmet());
 
-app.use('/cards', cardRouter);
-app.use('/users', userRouter);
-
 app.use((req, res, next) => {
-  req.user = {
-    _id: '63f7b65a4593a0895f31806e',
-  };
+  req.user = { _id: '63f7b65a4593a0895f31806e' };
   next();
 });
+app.use('/cards', cardRouter);
+app.use('/users', userRouter);
 
 app.use('*', (req, res) => {
   res.status(ERROR_NOT_FOUND).send({ message: 'Запрашиваемая страница не найдена' });
