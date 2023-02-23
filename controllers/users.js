@@ -3,7 +3,7 @@ const { ERROR_BAD_REQUEST, ERROR_NOT_FOUND, ERROR_SERVER } = require('../utils/e
 
 const getUserList = (req, res) => {
   User.find({})
-    .then((users) => res.send({ data: users }))
+    .then((userList) => res.send({ data: userList }))
     .catch((error) => res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`));
 };
 
