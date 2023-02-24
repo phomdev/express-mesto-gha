@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// Схема базы данных карточки
 const cardSchema = new mongoose.Schema({
   name: {
     type: String,

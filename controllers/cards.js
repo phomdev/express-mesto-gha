@@ -1,12 +1,14 @@
 const Card = require('../models/card');
 const { ERROR_BAD_REQUEST, ERROR_NOT_FOUND, ERROR_SERVER } = require('../utils/error-code');
 
+// Получение списка карточек
 const getCardList = (req, res) => {
   Card.find({})
-    .then((cards) => res.send({ data: cards }))
+    .then((cardList) => res.send({ data: cardList }))
     .catch((error) => res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`));
 };
 
+// Создание карточки
 const createCard = (req, res) => {
   const { name, link } = req.body;
   Card.create({ name, link, owner: req.user._id })
@@ -14,32 +16,34 @@ const createCard = (req, res) => {
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-ValidationError
       if (error.name === 'ValidationError') {
-        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании карточки.' });
+        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании карточки' });
       } else {
         res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`);
       }
     });
 };
 
+// Удаление карточки
 const deleteCard = (req, res) => {
   Card.findByIdAndRemove(req.params.cardId)
     .then((selectedCard) => {
       if (selectedCard) {
         res.send({ data: selectedCard });
       } else {
-        res.status(ERROR_NOT_FOUND).send({ message: 'Карточка по указанному _id не найдена.' });
+        res.status(ERROR_NOT_FOUND).send({ message: 'Карточка по указанному _id не найдена' });
       }
     })
     .catch((error) => {
-    // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
+      // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
       if (error.name === 'CastError') {
-        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные карточки.' });
+        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные карточки' });
       } else {
         res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`);
       }
     });
 };
 
+// Like карточки
 const likeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
@@ -50,19 +54,20 @@ const likeCard = (req, res) => {
       if (selectedCard) {
         res.send({ data: selectedCard });
       } else {
-        res.status(ERROR_NOT_FOUND).send({ message: 'Карточка по указанному _id не найдена.' });
+        res.status(ERROR_NOT_FOUND).send({ message: 'Карточка по указанному _id не найдена' });
       }
     })
     .catch((error) => {
-    // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
+      // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
       if (error.name === 'CastError') {
-        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные для постановки лайка.' });
+        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные для постановки лайка' });
       } else {
         res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`);
       }
     });
 };
 
+// Dislike карточки
 const removeLikeCard = (req, res) => {
   Card.findByIdAndUpdate(
     req.params.cardId,
@@ -73,13 +78,13 @@ const removeLikeCard = (req, res) => {
       if (selectedCard) {
         res.send({ data: selectedCard });
       } else {
-        res.status(ERROR_NOT_FOUND).send({ message: 'Карточка по указанному _id не найдена.' });
+        res.status(ERROR_NOT_FOUND).send({ message: 'Карточка по указанному _id не найдена' });
       }
     })
     .catch((error) => {
-    // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
+      // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
       if (error.name === 'CastError') {
-        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные для снятии лайка.' });
+        res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные для снятии лайка' });
       } else {
         res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`);
       }

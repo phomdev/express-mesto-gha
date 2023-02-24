@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 
+// Схема базы данных пользователя
 const userSchema = new mongoose.Schema({
   name: {
     type: String,
