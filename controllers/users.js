@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 
+const { ValidationError, CastError } = mongoose.Error;
+
 const User = require('../models/user');
 
 const {
@@ -25,7 +27,7 @@ const getUserId = (req, res) => {
     })
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
-      if (error instanceof mongoose.Error.CastError) {
+      if (error instanceof CastError) {
         res.status(ERROR_BAD_REQUEST).send({ message: 'Некорректный _id запрашиваемого пользователя' });
       } else {
         res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`);
@@ -40,7 +42,7 @@ const createUser = (req, res) => {
     .then((userObject) => res.status(SUCCESS_CREATED).send({ data: userObject }))
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-ValidationError
-      if (error instanceof mongoose.Error.ValidationError) {
+      if (error instanceof ValidationError) {
         res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании пользователя' });
       } else {
         res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`);
@@ -58,7 +60,7 @@ const updateUserData = (req, res) => {
     .then((updatedData) => res.send({ data: updatedData }))
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
-      if (error instanceof mongoose.Error.ValidationError) {
+      if (error instanceof ValidationError) {
         res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       } else {
         res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`);
@@ -76,7 +78,7 @@ const updateUserAvatar = (req, res) => {
     .then((updatedAvatar) => res.send({ data: updatedAvatar }))
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
-      if (error instanceof mongoose.Error.ValidationError) {
+      if (error instanceof ValidationError) {
         res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении аватара' });
       } else {
         res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`);
