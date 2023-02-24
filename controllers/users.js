@@ -1,4 +1,7 @@
+const mongoose = require('mongoose');
+
 const User = require('../models/user');
+
 const {
   ERROR_BAD_REQUEST, ERROR_NOT_FOUND, ERROR_SERVER, SUCCESS_CREATED,
 } = require('../utils/response-status');
@@ -22,7 +25,7 @@ const getUserId = (req, res) => {
     })
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
-      if (error.name === 'CastError') {
+      if (error.name instanceof mongoose.Error.CastError.name) {
         res.status(ERROR_BAD_REQUEST).send({ message: 'Некорректный _id запрашиваемого пользователя' });
       } else {
         res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`);
@@ -37,7 +40,7 @@ const createUser = (req, res) => {
     .then((userObject) => res.status(SUCCESS_CREATED).send({ data: userObject }))
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-ValidationError
-      if (error.name === 'ValidationError') {
+      if (error.name instanceof mongoose.Error.ValidationError.name) {
         res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании пользователя' });
       } else {
         res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`);
@@ -55,7 +58,7 @@ const updateUserData = (req, res) => {
     .then((updatedData) => res.send({ data: updatedData }))
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
-      if (error.name === 'ValidationError') {
+      if (error.name instanceof mongoose.Error.ValidationError.name) {
         res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       } else {
         res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`);
@@ -73,7 +76,7 @@ const updateUserAvatar = (req, res) => {
     .then((updatedAvatar) => res.send({ data: updatedAvatar }))
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
-      if (error.name === 'ValidationError') {
+      if (error.name instanceof mongoose.Error.ValidationError.name) {
         res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении аватара' });
       } else {
         res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`);
