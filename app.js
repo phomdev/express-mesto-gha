@@ -2,7 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 
 const { PORT = 3000, BASE_PATH = 'localhost' } = process.env;
-const { ERROR_NOT_FOUND } = require('./utils/error-code');
+const { ERROR_NOT_FOUND } = require('./utils/response-status');
 
 const app = express();
 

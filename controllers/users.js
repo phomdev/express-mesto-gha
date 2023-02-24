@@ -1,5 +1,12 @@
+const mongoose = require('mongoose');
+
+const { ValidationError, CastError } = mongoose.Error;
+
 const User = require('../models/user');
-const { ERROR_BAD_REQUEST, ERROR_NOT_FOUND, ERROR_SERVER } = require('../utils/error-code');
+
+const {
+  ERROR_BAD_REQUEST, ERROR_NOT_FOUND, ERROR_SERVER, SUCCESS_CREATED,
+} = require('../utils/response-status');
 
 // Получение списка пользователей
 const getUserList = (req, res) => {
@@ -20,7 +27,7 @@ const getUserId = (req, res) => {
     })
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
-      if (error.name === 'CastError') {
+      if (error.name instanceof CastError) {
         res.status(ERROR_BAD_REQUEST).send({ message: 'Некорректный _id запрашиваемого пользователя' });
       } else {
         res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`);
@@ -32,10 +39,10 @@ const getUserId = (req, res) => {
 const createUser = (req, res) => {
   const { name, about, avatar } = req.body;
   User.create({ name, about, avatar })
-    .then((userObject) => res.send({ data: userObject }))
+    .then((userObject) => res.status(SUCCESS_CREATED).send({ data: userObject }))
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-ValidationError
-      if (error.name === 'ValidationError') {
+      if (error.name instanceof ValidationError) {
         res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные при создании пользователя' });
       } else {
         res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`);
@@ -53,10 +60,7 @@ const updateUserData = (req, res) => {
     .then((updatedData) => res.send({ data: updatedData }))
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
-      if (error.name === 'CastError') {
-        res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь с указанным _id не найден' });
-      // https://mongoosejs.com/docs/api/error.html#error_Error-ValidationError
-      } else if (error.name === 'ValidationError') {
+      if (error.name instanceof ValidationError) {
         res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении профиля' });
       } else {
         res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`);
@@ -74,10 +78,7 @@ const updateUserAvatar = (req, res) => {
     .then((updatedAvatar) => res.send({ data: updatedAvatar }))
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
-      if (error.name === 'CastError') {
-        res.status(ERROR_NOT_FOUND).send({ message: 'Пользователь с указанным _id не найден' });
-      // https://mongoosejs.com/docs/api/error.html#error_Error-ValidationError
-      } else if (error.name === 'ValidationError') {
+      if (error.name instanceof ValidationError) {
         res.status(ERROR_BAD_REQUEST).send({ message: 'Переданы некорректные данные при обновлении аватара' });
       } else {
         res.status(ERROR_SERVER).send(`На сервере произошла ошибка: ${error}`);
