@@ -48,7 +48,7 @@ app.use('*', (req, res, next) => {
 
 // Обработчик ответов
 app.use(errors());
-// app.use(responseHandler);
+app.use(responseHandler);
 
 // Служебная информация: адрес запущенного сервера
 app.listen(PORT, () => {

@@ -43,9 +43,10 @@ const createUser = (req, res, next) => {
     name, about, avatar, email, password,
   } = req.body;
   const passwordHash = bcrypt.hash(password, 10);
-  User.create({
-    name, about, avatar, email, password: passwordHash,
-  })
+  passwordHash
+    .then((hash) => User.create({
+      name, about, avatar, email, password: hash,
+    }))
     .then((userObject) => res.status(SUCCESS_CREATED).send({ data: userObject }))
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-ValidationError
