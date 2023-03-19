@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 // Схема базы данных карточки
 const cardSchema = new mongoose.Schema({
@@ -10,6 +11,10 @@ const cardSchema = new mongoose.Schema({
   },
   link: {
     type: String,
+    validate: {
+      validator: (correct) => validator.isURL(correct),
+      message: 'Ошибка при передаче изображения карточки',
+    },
     required: true,
   },
   owner: {

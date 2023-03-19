@@ -4,12 +4,17 @@ const {
   getCardList, createCard, deleteCard, likeCard, removeLikeCard,
 } = require('../controllers/cards');
 
+// Валидация
+const {
+  validateCreateCard, validateCardId,
+} = require('../utils/data-validation');
+
 // Получить список, создать или удалить
 cardRouter.get('/', getCardList);
-cardRouter.post('/', createCard);
-cardRouter.delete('/:cardId', deleteCard);
+cardRouter.post('/', validateCreateCard, createCard);
+cardRouter.delete('/:cardId', validateCardId, deleteCard);
 // Поставить и убрать лайк
-cardRouter.put('/:cardId/likes', likeCard);
-cardRouter.delete('/:cardId/likes', removeLikeCard);
+cardRouter.put('/:cardId/likes', validateCardId, likeCard);
+cardRouter.delete('/:cardId/likes', validateCardId, removeLikeCard);
 
 module.exports = cardRouter;
