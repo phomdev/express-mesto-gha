@@ -43,7 +43,8 @@ const deleteCard = (req, res, next) => {
         next(new Forbidden('Вы не являетесь автором карточки, удаление невозможно'));
       } else {
         Card.findByIdAndRemove(req.params.cardId)
-          .then(() => res.send({ message: 'Карточка удалена с сервера' }));
+          .then(() => res.send({ message: 'Карточка удалена с сервера' }))
+          .catch(() => next(new NotFound('Карточка по указанному _id не найдена')));
       }
     })
     .catch((error) => {
