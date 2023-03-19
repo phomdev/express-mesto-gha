@@ -36,10 +36,12 @@ const deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((selectedCard) => {
       const isAuthor = req.user._id === selectedCard.owner.toString();
-      // Карточка не найдена или пользователь не автор
-      if (!selectedCard) { next(new NotFound('Карточка по указанному _id не найдена')); }
-      if (!isAuthor) { next(new Forbidden('Вы не являетесь автором карточки, удаление невозможно')); }
-      // Пользователь автор, можно удалять (если карточка в базе)
+      if (!selectedCard) {
+        throw new NotFound('Карточка по указанному _id не найдена');
+      }
+      if (!isAuthor) {
+        throw new Forbidden('Вы не являетесь автором карточки, удаление невозможно');
+      }
       Card.findByIdAndDelete(req.params.cardId)
         .orFail(() => new NotFound('Карточка по указанному _id не найдена'))
         .then(() => { res.send({ message: 'Карточка успешно удалена с сервера' }); });
