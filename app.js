@@ -39,8 +39,9 @@ app.post('/signin', validateUserAuth, login);
 app.post('/signup', validateUserRegister, createUser);
 
 // С защитой авторизации
-app.use('/cards', authProtection, cardRouter);
-app.use('/users', authProtection, userRouter);
+app.use(authProtection);
+app.use('/cards', cardRouter);
+app.use('/users', userRouter);
 
 app.use('*', (req, res, next) => {
   next(new NotFound('Запрашиваемая страница не найдена'));
