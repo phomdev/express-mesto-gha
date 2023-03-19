@@ -104,14 +104,8 @@ const login = (req, res, next) => {
 
 const getProfile = (req, res, next) => {
   User.findById(req.user._id)
-    .then((userElement) => {
-      if (userElement) {
-        res.send({ data: userElement });
-      } else {
-        next(new NotFound('Пользователь по указанному _id не найден'));
-      }
-    })
-    .catch(next);
+    .then((userElement) => res.send({ data: userElement }))
+    .catch((error) => next(error));
 };
 
 module.exports = {
