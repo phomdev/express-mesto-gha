@@ -33,20 +33,19 @@ const createCard = (req, res, next) => {
 
 // Удаление карточки
 const deleteCard = (req, res, next) => {
+  const userId = req.user._id;
+
   Card.findById(req.params.cardId)
-    .then((selectedCard) => {
-      const isAuthor = req.user._id === selectedCard.owner.toString();
-      // Если карточки нет или он не автор
-      if (!selectedCard) {
-        next(new NotFound('Карточка по указанному _id не найдена'));
+    .then((data) => {
+      if (!data) {
+        throw new NotFound('Карточка по указанному _id не найдена');
       }
-      if (!isAuthor) {
-        next(new Forbidden('Вы не являетесь автором карточки, удаление невозможно'));
+      if (!data.owner.equals(userId)) {
+        throw new Forbidden('Вы не являетесь автором карточки, удаление невозможно');
       }
-      // Если карточка есть и удаляет автор
-      Card.findByIdAndRemove(req.params.cardId)
-        .orFail(() => new NotFound('Карточка по указанному _id не найдена'))
-        .then(() => res.send({ message: 'Карточка успешно удалена с сервера' }));
+      Card.findByIdAndDelete(req.params.cardId)
+        .orFail(() => new NotFound('Not found'))
+        .then(() => { res.send({ message: 'Карточка успешно удалена с сервера' }); });
     })
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
