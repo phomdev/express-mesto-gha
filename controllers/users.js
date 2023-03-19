@@ -8,9 +8,9 @@ const User = require('../models/user');
 
 const { SUCCESS_CREATED, DUPLICATE_OBJECT } = require('../utils/response-status');
 
-const { NotFound } = require('../utils/response-errors/NotFound');
-const { BadRequests } = require('../utils/response-errors/BadRequest');
-const { ConflictingRequest } = require('../utils/response-errors/ConflictingRequest');
+const NotFound = require('../utils/response-errors/NotFound');
+const BadRequests = require('../utils/response-errors/BadRequest');
+const ConflictingRequest = require('../utils/response-errors/ConflictingRequest');
 
 // Получение списка пользователей
 const getUserList = (req, res, next) => {

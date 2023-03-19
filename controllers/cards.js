@@ -6,9 +6,9 @@ const Card = require('../models/card');
 
 const { SUCCESS_CREATED } = require('../utils/response-status');
 
-const { NotFound } = require('../utils/response-errors/NotFound');
-const { BadRequests } = require('../utils/response-errors/BadRequest');
-const { Forbidden } = require('../utils/response-errors/Forbidden');
+const NotFound = require('../utils/response-errors/NotFound');
+const BadRequests = require('../utils/response-errors/BadRequest');
+const Forbidden = require('../utils/response-errors/Forbidden');
 
 // Получение списка карточек
 const getCardList = (req, res, next) => {

@@ -1,12 +1,11 @@
 const express = require('express');
 const mongoose = require('mongoose');
+const { errors } = require('celebrate');
 
 const { PORT = 3000, BASE_PATH = 'localhost' } = process.env;
 // Защита сервера
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
-
-const { NotFound } = require('./utils/response-errors/NotFound');
 
 const app = express();
 
@@ -23,32 +22,33 @@ const { createUser, login } = require('./controllers/users');
 const authProtection = require('./middlewares/auth');
 const responseHandler = require('./middlewares/response-handler');
 const { validateUserAuth, validateUserRegister } = require('./utils/data-validation');
+const NotFound = require('./utils/response-errors/NotFound');
 
 // Блок кода для работы с mongoDB
 const mongoDB = 'mongodb://127.0.0.1:27017/mestodb';
 mongoose.set('strictQuery', false);
 mongoose.connect(mongoDB);
 
-app.use(limiter);
 // Автоматически проставлять заголовки безопасности
 app.use(helmet());
+app.use(limiter);
 app.use(express.json());
 
 // Вход и регистрация с валидацией
 app.post('/signin', validateUserAuth, login);
 app.post('/signup', validateUserRegister, createUser);
 
-// Защита авторизацией
-app.use(authProtection);
-app.use('/cards', cardRouter);
-app.use('/users', userRouter);
+// С защитой авторизации
+app.use('/cards', authProtection, cardRouter);
+app.use('/users', authProtection, userRouter);
 
 app.use('*', (req, res, next) => {
   next(new NotFound('Запрашиваемая страница не найдена'));
 });
 
 // Обработчик ответов
-app.use(responseHandler);
+app.use(errors());
+// app.use(responseHandler);
 
 // Служебная информация: адрес запущенного сервера
 app.listen(PORT, () => {
