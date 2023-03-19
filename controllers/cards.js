@@ -45,8 +45,8 @@ const deleteCard = (req, res, next) => {
       }
       // Если карточка есть и удаляет автор
       Card.findByIdAndRemove(req.params.cardId)
-        .then(() => res.send({ message: 'Карточка успешно удалена с сервера' }))
-        .catch(() => next(new NotFound('Карточка по указанному _id не найдена')));
+        .orFail(() => new NotFound('Карточка по указанному _id не найдена'))
+        .then(() => res.send({ message: 'Карточка успешно удалена с сервера' }));
     })
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
