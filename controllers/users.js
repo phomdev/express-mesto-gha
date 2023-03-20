@@ -104,7 +104,7 @@ const authorizeUser = (req, res, next) => {
 
 // Получение профиля пользователя
 const getUserProfile = (req, res, next) => {
-  User.findById(req.params.userId)
+  User.findById(req.user._id)
     .then((selectedUser) => {
       if (!selectedUser) {
         next(new NotFound('Пользователь по указанному _id не найден'));
