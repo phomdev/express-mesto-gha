@@ -8,6 +8,9 @@ const { PORT = 3000, BASE_PATH = 'localhost' } = process.env;
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 
+// Импорт основных роутов
+const mainRouter = require('./routes/index');
+
 const app = express();
 
 // Для защиты от множества автоматических запросов
@@ -17,12 +20,6 @@ const limiter = rateLimit({
   max: 100,
 });
 
-const { validateUserAuth, validateUserRegister } = require('./utils/data-validation');
-const { registerUser, authorizeUser } = require('./controllers/users');
-const authGuard = require('./middlewares/auth');
-const cardRouter = require('./routes/cards');
-const userRouter = require('./routes/users');
-const NotFound = require('./utils/response-errors/NotFound');
 const responseHandler = require('./middlewares/response-handler');
 
 // Блок кода для работы с mongoDB
@@ -35,17 +32,8 @@ app.use(express.json());
 app.use(limiter);
 app.use(helmet());
 
-// Регистрация и вход с валидацией
-app.post('/signup', validateUserRegister, registerUser);
-app.post('/signin', validateUserAuth, authorizeUser);
-
-// С защитой авторизации
-app.use('/cards', authGuard, cardRouter);
-app.use('/users', authGuard, userRouter);
-
-app.use('*', (req, res, next) => {
-  next(new NotFound('Запрашиваемая страница не найдена'));
-});
+// Основные рабочие роуты
+app.use(mainRouter);
 
 // Обработчик ответов
 app.use(errors());

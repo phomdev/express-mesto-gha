@@ -17,7 +17,7 @@ const ConflictingRequest = require('../utils/response-errors/ConflictingRequest'
 const getUserList = (req, res, next) => {
   User.find({})
     .then((userList) => res.send({ data: userList }))
-    .catch((error) => next(error));
+    .catch(next);
 };
 
 // Получение пользователя по ID
