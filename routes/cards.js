@@ -9,7 +9,7 @@ const {
   validateCreateCard, validateCardId,
 } = require('../utils/data-validation');
 
-// Получить список, создать или удалить
+// Получить список, создать или удалить карточку
 cardRouter.get('/', getCardList);
 cardRouter.post('/', validateCreateCard, createCard);
 cardRouter.delete('/:cardId', validateCardId, deleteCard);

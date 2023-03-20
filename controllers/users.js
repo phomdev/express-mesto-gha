@@ -6,11 +6,12 @@ const { ValidationError, CastError } = mongoose.Error;
 
 const User = require('../models/user');
 
-const { SUCCESS_CREATED, DUPLICATE_OBJECT } = require('../utils/response-status');
+const { SUCCESS_CREATED, DUPLICATE_OBJECT } = require('../utils/response-status'); // 201 и 11000
 
-const NotFound = require('../utils/response-errors/NotFound');
-const BadRequests = require('../utils/response-errors/BadRequest');
-const ConflictingRequest = require('../utils/response-errors/ConflictingRequest');
+// Классы ошибок
+const NotFound = require('../utils/response-errors/NotFound'); // 404
+const BadRequests = require('../utils/response-errors/BadRequest'); // 400
+const ConflictingRequest = require('../utils/response-errors/ConflictingRequest'); // 409
 
 // Получение списка пользователей
 const getUserList = (req, res, next) => {
@@ -25,9 +26,7 @@ const getUserId = (req, res, next) => {
     .then((selectedUser) => {
       if (selectedUser) {
         res.send({ data: selectedUser });
-      } else {
-        next(new NotFound('Пользователь по указанному _id не найден'));
-      }
+      } else { next(new NotFound('Пользователь по указанному _id не найден')); }
     })
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
@@ -37,8 +36,8 @@ const getUserId = (req, res, next) => {
     });
 };
 
-// Создание пользователя
-const createUser = (req, res, next) => {
+// Создание пользователя (Регистрация)
+const registerUser = (req, res, next) => {
   const {
     name, about, avatar, email, password,
   } = req.body;
@@ -46,6 +45,7 @@ const createUser = (req, res, next) => {
   passwordHash.then((hash) => User.create({
     name, about, avatar, email, password: hash,
   }))
+    // Не передаём пароль в ответе
     .then(() => res.status(SUCCESS_CREATED).send({
       name, about, avatar, email,
     }))
@@ -91,27 +91,34 @@ const updateUserAvatar = (req, res, next) => {
     });
 };
 
-// Валидация почты и пароля
-const login = (req, res, next) => {
+// Авторизация пользователя
+const authorizeUser = (req, res, next) => {
   const { email, password } = req.body;
   return User.findUserByCredentials(email, password)
-    .then((userObject) => {
-      const userToken = jwt.sign({ _id: userObject._id }, 'token-generate-key', { expiresIn: '7d' });
+    .then((selectedUser) => {
+      const userToken = jwt.sign({ _id: selectedUser._id }, 'token-generate-key', { expiresIn: '7d' });
       res.send({ userToken });
     })
     .catch((error) => next(error));
 };
 
-const getProfile = (req, res, next) => {
-  User.findById(req.user._id)
+// Получение профиля пользователя
+const getUserProfile = (req, res, next) => {
+  User.findById(req.params.userId)
     .then((selectedUser) => {
       if (!selectedUser) {
-        throw new NotFound('Пользователь не найден');
+        next(new NotFound('Пользователь по указанному _id не найден'));
       } else { res.send({ data: selectedUser }); }
     })
-    .catch(() => { next(); });
+    .catch((error) => { next(error); });
 };
 
 module.exports = {
-  getUserList, getUserId, createUser, updateUserData, updateUserAvatar, login, getProfile,
+  getUserList,
+  getUserId,
+  registerUser,
+  updateUserData,
+  updateUserAvatar,
+  authorizeUser,
+  getUserProfile,
 };

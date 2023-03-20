@@ -10,6 +10,7 @@ module.exports = (req, res, next) => {
   }
 
   let payload;
+  // Избавляемся от Bearer и записываем токен
   const userToken = authorization.replace('Bearer ', '');
 
   try {

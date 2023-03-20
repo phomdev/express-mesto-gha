@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const { errors } = require('celebrate');
 
 const { PORT = 3000, BASE_PATH = 'localhost' } = process.env;
+
 // Защита сервера
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -17,8 +18,8 @@ const limiter = rateLimit({
 });
 
 const { validateUserAuth, validateUserRegister } = require('./utils/data-validation');
-const { createUser, login } = require('./controllers/users');
-const authProtection = require('./middlewares/auth');
+const { registerUser, authorizeUser } = require('./controllers/users');
+const authGuard = require('./middlewares/auth');
 const cardRouter = require('./routes/cards');
 const userRouter = require('./routes/users');
 const NotFound = require('./utils/response-errors/NotFound');
@@ -35,12 +36,12 @@ app.use(limiter);
 app.use(helmet());
 
 // Регистрация и вход с валидацией
-app.post('/signup', validateUserRegister, createUser);
-app.post('/signin', validateUserAuth, login);
+app.post('/signup', validateUserRegister, registerUser);
+app.post('/signin', validateUserAuth, authorizeUser);
 
 // С защитой авторизации
-app.use('/cards', authProtection, cardRouter);
-app.use('/users', authProtection, userRouter);
+app.use('/cards', authGuard, cardRouter);
+app.use('/users', authGuard, userRouter);
 
 app.use('*', (req, res, next) => {
   next(new NotFound('Запрашиваемая страница не найдена'));

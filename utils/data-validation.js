@@ -5,7 +5,6 @@ const { celebrate, Joi } = require('celebrate');
 const regular = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/;
 
 // Начало валидации данных пользователя
-
 // Валидация авторизации
 const validateUserAuth = celebrate({
   body: Joi.object().keys({
@@ -53,7 +52,6 @@ const validateUserAvatar = celebrate({
 });
 
 // Начало валидации данных карточек
-
 // Валидация данных создания карточки
 const validateCreateCard = celebrate({
   body: Joi.object().keys({

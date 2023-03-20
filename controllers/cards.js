@@ -4,11 +4,12 @@ const { ValidationError, CastError } = mongoose.Error;
 
 const Card = require('../models/card');
 
-const { SUCCESS_CREATED } = require('../utils/response-status');
+const { SUCCESS_CREATED } = require('../utils/response-status'); // 201
 
-const NotFound = require('../utils/response-errors/NotFound');
-const BadRequests = require('../utils/response-errors/BadRequest');
-const Forbidden = require('../utils/response-errors/Forbidden');
+// Классы ошибок
+const NotFound = require('../utils/response-errors/NotFound'); // 404
+const BadRequests = require('../utils/response-errors/BadRequest'); // 400
+const Forbidden = require('../utils/response-errors/Forbidden'); // 403
 
 // Получение списка карточек
 const getCardList = (req, res, next) => {
@@ -35,10 +36,10 @@ const createCard = (req, res, next) => {
 const deleteCard = (req, res, next) => {
   Card.findById(req.params.cardId)
     .then((selectedCard) => {
-      //
+      // Если пользователь не создатель или карточки нет
       if (!selectedCard) { next(new NotFound('Карточка по указанному _id не найдена')); }
       if (!selectedCard.owner.equals(req.user._id)) { next(new Forbidden('Вы не являетесь автором карточки, удаление невозможно')); }
-      //
+      // Возможность удаления, если пользователь — создатель и карточка есть в базе
       Card.findByIdAndDelete(req.params.cardId)
         .orFail(() => new NotFound('Карточка по указанному _id не найдена'))
         .then(() => { res.send({ message: 'Карточка успешно удалена с сервера' }); });
@@ -61,9 +62,7 @@ const likeCard = (req, res, next) => {
     .then((selectedCard) => {
       if (selectedCard) {
         res.send({ data: selectedCard });
-      } else {
-        next(new NotFound('Карточка по указанному _id не найдена'));
-      }
+      } else { next(new NotFound('Карточка по указанному _id не найдена')); }
     })
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
@@ -83,9 +82,7 @@ const removeLikeCard = (req, res, next) => {
     .then((selectedCard) => {
       if (selectedCard) {
         res.send({ data: selectedCard });
-      } else {
-        next(new NotFound('Карточка по указанному _id не найдена'));
-      }
+      } else { next(new NotFound('Карточка по указанному _id не найдена')); }
     })
     .catch((error) => {
       // https://mongoosejs.com/docs/api/error.html#error_Error-CastError
