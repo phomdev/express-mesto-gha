@@ -16,13 +16,13 @@ const limiter = rateLimit({
   max: 100,
 });
 
-const cardRouter = require('./routes/cards');
-const userRouter = require('./routes/users');
+const { validateUserAuth, validateUserRegister } = require('./utils/data-validation');
 const { createUser, login } = require('./controllers/users');
 const authProtection = require('./middlewares/auth');
-const responseHandler = require('./middlewares/response-handler');
-const { validateUserAuth, validateUserRegister } = require('./utils/data-validation');
+const cardRouter = require('./routes/cards');
+const userRouter = require('./routes/users');
 const NotFound = require('./utils/response-errors/NotFound');
+const responseHandler = require('./middlewares/response-handler');
 
 // Блок кода для работы с mongoDB
 const mongoDB = 'mongodb://127.0.0.1:27017/mestodb';
@@ -30,13 +30,13 @@ mongoose.set('strictQuery', false);
 mongoose.connect(mongoDB);
 
 // Автоматически проставлять заголовки безопасности
-app.use(helmet());
-app.use(limiter);
 app.use(express.json());
+app.use(limiter);
+app.use(helmet());
 
-// Вход и регистрация с валидацией
-app.post('/signin', validateUserAuth, login);
+// Регистрация и вход с валидацией
 app.post('/signup', validateUserRegister, createUser);
+app.post('/signin', validateUserAuth, login);
 
 // С защитой авторизации
 app.use('/cards', authProtection, cardRouter);
@@ -52,5 +52,6 @@ app.use(responseHandler);
 
 // Служебная информация: адрес запущенного сервера
 app.listen(PORT, () => {
+  // eslint-disable-next-line no-console
   console.log(`Адрес сервера — http://${BASE_PATH}:${PORT}`);
 });
