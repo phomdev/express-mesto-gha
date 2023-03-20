@@ -11,7 +11,7 @@ const validateUserAuth = celebrate({
   body: Joi.object().keys({
     email: Joi.string().min(4).max(50).email()
       .required(),
-    password: Joi.string().min(5)
+    password: Joi.string()
       .required(),
   }),
 });
@@ -24,7 +24,7 @@ const validateUserRegister = celebrate({
     avatar: Joi.string().pattern(regular),
     email: Joi.string().min(4).max(50).email()
       .required(),
-    password: Joi.string().min(5)
+    password: Joi.string()
       .required(),
   }),
 });
