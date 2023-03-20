@@ -104,9 +104,12 @@ const login = (req, res, next) => {
 
 const getProfile = (req, res, next) => {
   User.findById(req.user._id)
-    .orFail(() => new NotFound('Пользователь по указанному _id не найден'))
-    .then((selectedUser) => res.send(selectedUser))
-    .catch((error) => next(error));
+    .then((selectedUser) => {
+      if (!selectedUser) {
+        throw new NotFound('Пользователь не найден');
+      } else { res.send({ data: selectedUser }); }
+    })
+    .catch(() => { next(); });
 };
 
 module.exports = {
